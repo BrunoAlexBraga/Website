@@ -4,8 +4,9 @@
 	License: pixelarity.com/license
 */
 
-(function($) {
+(function ($) {
 
+    "use strict";
 	var	$window = $(window),
 		$body = $('body'),
 		$header = $('#header'),
@@ -58,6 +59,88 @@
 					visibleClass: 'is-navPanel-visible',
 					side: 'right'
 				});
+    
+    // Carousel.
+			$('.carousel').each(function() {
+
+				var	$this = $(this);
+
+				if (!skel.vars.mobile) {
+
+					$this.css('overflow-x', 'hidden');
+
+					// Wrapper.
+						$this.wrap('<div class="carousel-wrapper" />');
+						var $wrapper = $this.parent();
+
+					// Nav.
+						var	$navRight = $('<div class="nav right"></div>').insertAfter($this),
+							$navLeft = $('<div class="nav left"></div>').insertAfter($this),
+							intervalId;
+
+						$navLeft
+							.on('mouseenter', function() {
+								intervalId = window.setInterval(function() {
+									$this.scrollLeft( $this.scrollLeft() - 5 );
+								}, 10);
+							})
+							.on('mouseleave', function() {
+								window.clearInterval(intervalId);
+							});
+
+						$navRight
+							.on('mouseenter', function() {
+								intervalId = window.setInterval(function() {
+									$this.scrollLeft( $this.scrollLeft() + 5 );
+								}, 10);
+							})
+							.on('mouseleave', function() {
+								window.clearInterval(intervalId);
+							});
+
+					// Events.
+						$window
+							.on('resize load', function() {
+
+								if ($this.width() < $this.prop('scrollWidth'))
+									$wrapper.removeClass('no-scroll');
+								else
+									$wrapper.addClass('no-scroll');
+
+							});
+
+				}
+
+				// Poptrox.
+					var p = {
+						baseZIndex: 100001,
+						useBodyOverflow: false,
+						usePopupEasyClose: false,
+						overlayColor: '#000000',
+						overlayOpacity: 0.75,
+						usePopupDefaultStyling: false,
+						popupLoaderText: '',
+						usePopupNav: true
+					};
+
+					if (skel.breakpoint('small').active) {
+
+						p.usePopupCaption = false;
+						p.usePopupCloser = false;
+						p.windowMargin = 10;
+
+					}
+					else {
+
+						p.usePopupCaption = true;
+						p.usePopupCloser = true;
+						p.windowMargin = 50;
+
+					}
+
+					$this.poptrox(p);
+
+			});
 
 	// Scrolly.
 		$('.scrolly').scrolly({
